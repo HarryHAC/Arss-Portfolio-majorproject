@@ -15,17 +15,17 @@ function buildScene(canvas, opts) {
     renderer.outputEncoding = THREE.sRGBEncoding;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-  scene.add(new THREE.AmbientLight(0x9fc4ff, 0.55));
-  const key = new THREE.DirectionalLight(0xffffff, 1.0);
+  scene.add(new THREE.AmbientLight(0xc4b8a0, 0.45));
+  const key = new THREE.DirectionalLight(0xfff0e0, 0.95);
   key.position.set(5, 7, 6);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0x1e90ff, 0.55);
+  const fill = new THREE.DirectionalLight(0x7a9fc2, 0.45);
   fill.position.set(-6, 1, -3);
   scene.add(fill);
-  const rimL = new THREE.DirectionalLight(0x00e5ff, 0.95);
+  const rimL = new THREE.DirectionalLight(0xc8873a, 0.8);
   rimL.position.set(-2, -3, -7);
   scene.add(rimL);
-  const pt = new THREE.PointLight(0x8b7bff, 0.7, 40);
+  const pt = new THREE.PointLight(0x9e8fcf, 0.5, 40);
   pt.position.set(0, 5, 3);
   scene.add(pt);
 
@@ -47,38 +47,38 @@ function buildScene(canvas, opts) {
     return new THREE.CanvasTexture(c);
   })();
   const matBody = new THREE.MeshStandardMaterial({
-    color: 0x0d2547,
-    metalness: 0.5,
-    roughness: 0.35,
-    emissive: 0x03101f,
+    color: 0x1e2328,
+    metalness: 0.6,
+    roughness: 0.3,
+    emissive: 0x0d0f12,
   });
   const matGlass = new THREE.MeshStandardMaterial({
-    color: 0x63d8ff,
+    color: 0xb8ccd8,
     transparent: true,
-    opacity: 0.24,
-    metalness: 0,
-    roughness: 0.08,
-    emissive: 0x0a4a5a,
-    emissiveIntensity: 0.55,
+    opacity: 0.2,
+    metalness: 0.1,
+    roughness: 0.06,
+    emissive: 0x2a3c48,
+    emissiveIntensity: 0.4,
     side: THREE.DoubleSide,
   });
   const matAccent = (c) =>
     new THREE.MeshStandardMaterial({
       color: c,
-      metalness: 0.55,
-      roughness: 0.28,
+      metalness: 0.6,
+      roughness: 0.25,
       emissive: c,
-      emissiveIntensity: 0.22,
+      emissiveIntensity: 0.18,
     });
   const matTube = new THREE.MeshStandardMaterial({
-    color: 0x18406b,
-    metalness: 0.3,
-    roughness: 0.55,
+    color: 0x2c3540,
+    metalness: 0.35,
+    roughness: 0.5,
   });
   const matRib = new THREE.MeshStandardMaterial({
-    color: 0x1c4a7e,
-    metalness: 0.4,
-    roughness: 0.5,
+    color: 0x343e4a,
+    metalness: 0.45,
+    roughness: 0.45,
   });
 
   // ---- component registry (each part = its own clickable group) ----
@@ -205,12 +205,12 @@ function buildScene(canvas, opts) {
   const gBlow = comp("blower", [-3.1, 0, 0], [-0.5, 0.75, 0]);
   cyl2(gBlow, -3.1, 0, 0, 0.6, 0.6, 0.4, matDark, "z");
   cyl2(gBlow, -3.1, 0, 0.24, 0.28, 0.28, 0.12, matSteel, "z");
-  cyl2(gBlow, -3.1, 0, 0.32, 0.2, 0.06, 0.18, matAccent(0x1e90ff), "z");
+  cyl2(gBlow, -3.1, 0, 0.32, 0.2, 0.06, 0.18, matAccent(0x7a9fc2), "z");
   for (let k = 0; k < 8; k++) {
     const a = (k / 8) * Math.PI * 2;
     const b = new THREE.Mesh(
       new THREE.BoxGeometry(0.3, 0.02, 0.05),
-      matAccent(0x00e5ff),
+      matAccent(0xc8873a),
     );
     b.position.set(-3.1 + Math.cos(a) * 0.16, Math.sin(a) * 0.16, 0.2);
     b.rotation.z = a;
@@ -233,11 +233,11 @@ function buildScene(canvas, opts) {
   cyl2(gMix, 0.05, 0, 0, 0.12, 0.12, 0.4, matSteel, "x");
   cyl2(gMix, -0.6, 0.9, 0, 0.1, 0.1, 0.35, matSteel);
   cyl2(gMix, -0.6, -0.9, 0, 0.1, 0.1, 0.35, matSteel);
-  tor(gMix, -0.6, 0, 0, 0.34, 0.035, matAccent(0x1e90ff), Math.PI / 2, 0);
+  tor(gMix, -0.6, 0, 0, 0.34, 0.035, matAccent(0x7a9fc2), Math.PI / 2, 0);
   // O2 CYLINDER — body + shoulder taper + neck + handwheel + base
   const gCyl = comp("cylinder", [-0.6, 3.1, -0.6], [0.2, 1, -0.5]);
-  cyl2(gCyl, -0.6, 3.0, -0.6, 0.34, 0.34, 1.4, matAccent(0x8b7bff));
-  cyl2(gCyl, -0.6, 3.8, -0.6, 0.12, 0.34, 0.3, matAccent(0x8b7bff));
+  cyl2(gCyl, -0.6, 3.0, -0.6, 0.34, 0.34, 1.4, matAccent(0x9e8fcf));
+  cyl2(gCyl, -0.6, 3.8, -0.6, 0.12, 0.34, 0.3, matAccent(0x9e8fcf));
   cyl2(gCyl, -0.6, 4.0, -0.6, 0.1, 0.1, 0.2, matSteel);
   tor(gCyl, -0.6, 4.14, -0.6, 0.13, 0.03, matSteel, Math.PI / 2, 0);
   cyl2(gCyl, -0.6, 2.28, -0.6, 0.36, 0.36, 0.08, matDark);
@@ -246,12 +246,12 @@ function buildScene(canvas, opts) {
   bx(gReg, -0.6, 2.02, -0.6, 0.32, 0.3, 0.3, matSteel);
   cyl2(gReg, -0.36, 2.06, -0.46, 0.13, 0.13, 0.05, matAccent(0xf5f9ff), "x");
   cyl2(gReg, -0.36, 2.02, -0.74, 0.09, 0.09, 0.05, matAccent(0xf5f9ff), "x");
-  sph(gReg, -0.82, 2.02, -0.6, 0.07, matAccent(0x00e5ff));
+  sph(gReg, -0.82, 2.02, -0.6, 0.07, matAccent(0xc8873a));
   cyl2(gReg, -0.6, 1.85, -0.6, 0.06, 0.06, 0.16, matSteel);
   // O2 VALVE — solenoid coil + body + stem
   const gValve = comp("valve", [-0.6, 1.35, -0.4], [0.9, 0, -0.3]);
   cyl2(gValve, -0.6, 1.44, -0.4, 0.14, 0.14, 0.26, matDark);
-  tor(gValve, -0.6, 1.44, -0.4, 0.15, 0.03, matAccent(0x8b7bff), 0, 0);
+  tor(gValve, -0.6, 1.44, -0.4, 0.15, 0.03, matAccent(0x9e8fcf), 0, 0);
   bx(gValve, -0.6, 1.2, -0.4, 0.2, 0.16, 0.2, matSteel);
   cyl2(gValve, -0.6, 1.02, -0.4, 0.05, 0.05, 0.18, matSteel);
   // ---- MASK (full-face, signature object) ----
@@ -273,7 +273,7 @@ function buildScene(canvas, opts) {
   mk.add(seal);
   const frame = new THREE.Mesh(
     new THREE.TorusGeometry(0.7, 0.045, 12, 44),
-    matAccent(0x00e5ff),
+    matAccent(0xc8873a),
   );
   frame.rotation.y = Math.PI / 2;
   frame.position.set(-0.08, 0, 0);
@@ -284,7 +284,7 @@ function buildScene(canvas, opts) {
   sph(mk, 0.66, -0.52, 0, 0.1, matSkirt); // exhalation valve
   cyl2(mk, -0.95, -0.08, 0.22, 0.16, 0.16, 0.5, matAccent(0x00c781), "x"); // inhalation port (green)
   cyl2(mk, -0.9, -0.5, -0.16, 0.13, 0.13, 0.42, matAccent(0xff9d00), "x"); // exhalation port (orange)
-  cyl2(mk, 0.05, 1.02, 0, 0.08, 0.08, 0.42, matAccent(0x1e90ff)); // pressure-support connector (top)
+  cyl2(mk, 0.05, 1.02, 0, 0.08, 0.08, 0.42, matAccent(0x7a9fc2)); // pressure-support connector (top)
   [
     [0.5, 0.6],
     [0.5, -0.6],
@@ -329,7 +329,7 @@ function buildScene(canvas, opts) {
       -2.7 + Math.random() * 0.25,
       (Math.random() - 0.5) * 0.3,
       0.045,
-      matAccent(0x1e90ff),
+      matAccent(0x7a9fc2),
     );
   // CO2 SCRUBBER — clear ribbed cartridge (axis X) with sorbent granules
   const gScrub = comp("scrub", [-0.8, -2.4, 0], [-0.6, -1, 0]);
@@ -359,7 +359,7 @@ function buildScene(canvas, opts) {
     bx(gEsp, -3.85 + i * 0.13, -2.44, 0.68, 0.02, 0.06, 0.02, matSteel);
   for (let i = 0; i < 8; i++)
     bx(gEsp, -3.85 + i * 0.13, -2.44, 0.12, 0.02, 0.06, 0.02, matSteel);
-  sph(gEsp, -3.72, -2.42, 0.5, 0.04, matAccent(0x00e5ff));
+  sph(gEsp, -3.72, -2.42, 0.5, 0.04, matAccent(0xc8873a));
   // SENSOR SUITE — mini PCB modules with sensor domes
   const gSens = comp("sensors", [2.5, 0.5, 0.2], [0.8, 0.7, 0.3]);
   [
@@ -368,7 +368,7 @@ function buildScene(canvas, opts) {
     [2.7, 0.4, -0.3],
   ].forEach((p) => {
     bx(gSens, p[0], p[1], p[2], 0.22, 0.05, 0.16, matPCB);
-    sph(gSens, p[0], p[1] + 0.07, p[2], 0.08, matAccent(0x00e5ff));
+    sph(gSens, p[0], p[1] + 0.07, p[2], 0.08, matAccent(0xc8873a));
   });
 
   // ---- flow paths (tubes + particles) ----
@@ -439,8 +439,8 @@ function buildScene(canvas, opts) {
       [-1.4, 0, 0],
       [-0.6, 0.2, 0],
     ],
-    0x00e5ff,
-  ); // fresh
+    0xc8873a,
+  ); // fresh air flow
   addFlow(
     [
       [-0.6, 0.4, 0],
@@ -448,7 +448,7 @@ function buildScene(canvas, opts) {
       [2.0, 0.42, 0],
       [2.5, 0.05, 0.16],
     ],
-    0x1e90ff,
+    0x7a9fc2,
     8,
   ); // mixed -> mask (corrugated)
   addFlow(
@@ -527,7 +527,7 @@ function buildScene(canvas, opts) {
   const ring = new THREE.Mesh(
     new THREE.TorusGeometry(rad * 1.02, 0.018, 8, 72),
     new THREE.MeshBasicMaterial({
-      color: 0x00e5ff,
+      color: 0xc8873a,
       transparent: true,
       opacity: 0.55,
     }),

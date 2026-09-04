@@ -4,26 +4,26 @@
    ============================================================ */
 :root {
   color-scheme: dark;
-  /* Professional slate/teal dark palette — refined, low-neon */
-  --navy: #0a141d;
-  --navy-2: #0f1d29;
-  --panel: #13232f;
-  --panel-2: #1a2f3d;
-  --glass: rgba(18, 35, 47, 0.55);
-  --line: #1e3240;
-  --line-2: #2c4757;
-  --cyan: #3fcadb;
-  --oxy: #4f90e0;
-  --violet: #9a8cf0;
-  --green: #2fb98c;
-  --orange: #e0973f;
-  --red: #e0574d;
-  --white: #eef4f8;
-  --ink: #c3d3dd;
-  --dim: #879aa8;
-  --mute2: #5f7280;
-  --glow-c: 0 0 14px rgba(63, 202, 219, 0.22);
-  --glow-g: 0 0 14px rgba(47, 185, 140, 0.2);
+  /* Industrial dark palette — charcoal slate base with amber-copper warmth */
+  --navy: #0d0f12;
+  --navy-2: #141719;
+  --panel: #191c20;
+  --panel-2: #21262c;
+  --glass: rgba(22, 26, 31, 0.6);
+  --line: #252b32;
+  --line-2: #333c46;
+  --cyan: #c8873a;       /* burnt amber — primary accent */
+  --oxy: #7a9fc2;        /* steel blue — data accent */
+  --violet: #9e8fcf;     /* muted violet */
+  --green: #3aab7a;      /* medical green */
+  --orange: #d4783a;     /* alert amber */
+  --red: #c94f46;        /* danger red */
+  --white: #dde4ea;
+  --ink: #aeb9c4;
+  --dim: #6e7e8d;
+  --mute2: #48576a;
+  --glow-c: 0 0 12px rgba(200, 135, 58, 0.18);
+  --glow-g: 0 0 12px rgba(58, 171, 122, 0.15);
   --maxw: 1220px;
   --r: 14px;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -44,16 +44,27 @@ body {
   line-height: 1.6;
   background:
     radial-gradient(
-      1200px 800px at 82% -10%,
-      rgba(79, 144, 224, 0.07),
+      ellipse 1100px 600px at 75% -5%,
+      rgba(200, 135, 58, 0.12),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 700px 500px at 10% 15%,
+      rgba(122, 159, 194, 0.1),
       transparent 60%
     ),
     radial-gradient(
-      900px 700px at 4% 8%,
-      rgba(63, 202, 219, 0.05),
-      transparent 55%
+      ellipse 600px 400px at 50% 90%,
+      rgba(30, 35, 28, 0.08),
+      transparent 70%
     ),
-    linear-gradient(180deg, #08111a, var(--navy) 45%);
+    linear-gradient(
+      175deg,
+      #0a0c0f 0%,
+      #0d1014 30%,
+      #0f1217 65%,
+      #0b0e11 100%
+    );
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -308,7 +319,7 @@ nav.links a.active {
   font-size: clamp(2rem, 5.2vw, 4.1rem);
   font-weight: 700;
   letter-spacing: -0.01em;
-  background: linear-gradient(110deg, #fff 15%, var(--cyan) 55%, var(--oxy));
+  background: linear-gradient(110deg, #f0eae0 10%, var(--cyan) 50%, var(--oxy) 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

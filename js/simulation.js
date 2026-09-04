@@ -393,7 +393,7 @@ const DEC_RULES = [
           b = nodes[j];
         const d = Math.hypot(a.x - b.x, a.y - b.y);
         if (d < 90) {
-          x.strokeStyle = "rgba(0,229,255," + (1 - d / 90) * 0.25 + ")";
+          x.strokeStyle = "rgba(200,135,58," + (1 - d / 90) * 0.22 + ")";
           x.lineWidth = 1;
           x.beginPath();
           x.moveTo(a.x, a.y);
@@ -402,13 +402,13 @@ const DEC_RULES = [
         }
       }
     nodes.forEach((n) => {
-      x.fillStyle = "rgba(0,229,255,.8)";
+      x.fillStyle = "rgba(200,135,58,.7)";
       x.beginPath();
       x.arc(n.x, n.y, 2, 0, Math.PI * 2);
       x.fill();
     });
     // core
-    x.fillStyle = "rgba(139,123,255,.9)";
+    x.fillStyle = "rgba(158,143,207,.85)";
     x.beginPath();
     x.arc(w / 2, h / 2, 7 + Math.sin(Date.now() / 400) * 2, 0, Math.PI * 2);
     x.fill();
@@ -476,7 +476,7 @@ function loop() {
     document
       .querySelectorAll(".dec-step")
       .forEach((s, i) =>
-        s.classList.toggle("on", i === chosen || (chosen >= 4 && i >= chosen)),
+        s.classList.toggle("on", i === chosen),
       );
   }
   if (window._neuro) window._neuro();
