@@ -4,22 +4,17 @@
 Adaptive Respiratory Systems Research Team — Harikant Prasad Gupta · Sahil Krishna · Kinley Khamsum Tshering
 Guided by Dr. T. Jayanthi, Associate Professor
 
-## Files
-- `index.html` — the complete, self-contained portfolio (3D digital twin, simulation lab, dashboard, reviews, team, etc.). Everything is in this one file.
+## Architecture & Project Structure
+- `index.html` — Semantic HTML5 application structure, layouts, HUD, and viewer modals
+- `css/styles.css` — High-fidelity aerospace & biomedical theme, cybernetic UI components, responsiveness
+- `js/data.js` — System constants, hardware specifications, team details, timeline, and literature
+- `js/simulation.js` — Adaptive life-support simulation engine, atmospheric models, PID control loop
+- `js/three-scene.js` — Interactive 3D Digital Twin built with Three.js (orbit controls, sensor callouts)
+- `js/ui.js` — Dashboard UI interaction, telemetry graphs, PDF documentation viewer, and notifications
 
-## How to open
-Double-click `index.html` to open it in any modern browser (Chrome/Edge recommended).
-It needs an internet connection the first time so it can load the fonts and the Three.js 3D library from their CDNs.
-
-## Live shareable version
-The same page is published as a shareable link:
-https://claude.ai/code/artifact/59c0efac-c3bb-4ef8-80d5-5b929f9ccb33
-
-## How to edit content
-Open `index.html` in a text/code editor. All content lives in editable `DATA`
-objects near the top of the `<script>` section — search for these names:
-- `TEAM`, `REVIEWS`, `TIMELINE`, `TIMELINE_STATUS`, `WORK`, `COMPONENTS`,
-  `SENSORS`, `SPECS`, `FAULTS`, `LIT`, `COMPARE`, `FUTURE`, `GALLERY`, `DOCS`.
+## How to Run Locally
+Double-click `index.html` or serve with any static web server (e.g. `npx serve` or Live Server).
+An internet connection is required to load Three.js and Google Fonts from CDN.
 
 ## Photos & PDFs
 - Click any team / mentor / gallery photo slot to upload an image (saved in your
