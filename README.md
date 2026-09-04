@@ -4,6 +4,8 @@
 Adaptive Respiratory Systems Research Team — Harikant Prasad Gupta · Sahil Krishna · Kinley Khamsum Tshering
 Guided by Dr. T. Jayanthi, Associate Professor
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/HarryHAC/arss-portfolio)
+
 ## Architecture & Project Structure
 - `index.html` — Semantic HTML5 application structure, layouts, HUD, and viewer modals
 - `css/styles.css` — High-fidelity aerospace & biomedical theme, cybernetic UI components, responsiveness
