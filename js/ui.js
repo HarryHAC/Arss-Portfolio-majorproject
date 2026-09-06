@@ -157,7 +157,7 @@ SENSORS.forEach((s) => {
   });
   svg += `<rect x="360" y="45" width="120" height="60" rx="10" fill="var(--panel-2)" stroke="var(--violet)" stroke-width="1.5"/><text x="420" y="70" text-anchor="middle" font-family="var(--f-disp)" font-size="14" fill="var(--violet)">ESP32</text><text x="420" y="88" text-anchor="middle" font-family="var(--f-mono)" font-size="8" fill="var(--dim)">DECIDE · LOG · SAFETY</text>`;
   [
-    ["BLOWER PWM", "var(--cyan)", 35],
+    ["BLOWERS PWM ×2", "var(--cyan)", 35],
     ["O₂ VALVE", "var(--violet)", 75],
     ["ALARM", "var(--red)", 115],
   ].forEach(([t, col, y]) => {
@@ -168,11 +168,9 @@ SENSORS.forEach((s) => {
 
 // components grid
 COMPONENTS.forEach((c) => {
-  const card = el(
-    "div",
-    "card",
-    `<div class="ic"><svg viewBox="0 0 24 24"><path d="${c.icon}"/></svg></div><h3>${c.name}</h3><p>${c.fn}</p><div class="chips"><span class="chip2">IN: ${c.in}</span><span class="chip2">OUT: ${c.out}</span></div>`,
-  );
+  const card = el("div", "card");
+  card.id = "comp-card-" + c.id;
+  renderCompCard(card, c);
   card.style.cursor = "pointer";
   card.onclick = () => openPanel(c);
   $("#compGrid").appendChild(card);
@@ -255,60 +253,120 @@ const TIMELINE_STATUS = [
   "plan",
 ];
 TIMELINE.forEach(([ph, t, d], i) => {
-  const s = TIMELINE_STATUS[i];
-  const st =
-    s === "done"
+  const kp = "arss-tl-" + i + "-";
+  let s = LS.get(kp + "status") || TIMELINE_STATUS[i];
+  const card = el("div", "tl-card");
+  card.innerHTML = `<div class="ph">PHASE ${ph}</div><h4 data-f="t">${LS.get(kp + "t") || t}</h4><p data-f="d">${LS.get(kp + "d") || d}</p><div class="st"></div>`;
+  const stWrap = $(".st", card);
+  const tagOf = (x) =>
+    x === "done"
       ? '<span class="tag done">Completed</span>'
-      : s === "wip"
+      : x === "wip"
         ? '<span class="tag wip">In Progress</span>'
         : '<span class="tag">Planned</span>';
-  $("#timeline").appendChild(
-    el(
-      "div",
-      "tl-card",
-      `<div class="ph">PHASE ${ph}</div><h4>${t}</h4><p>${d}</p><div class="st">${st}</div>`,
-    ),
-  );
+  const renderSt = () => {
+    stWrap.innerHTML =
+      tagOf(s) +
+      `<button class="ministat" type="button" title="Change status">${IC.edit}</button>`;
+    $(".ministat", stWrap).onclick = () => {
+      s = s === "plan" ? "wip" : s === "wip" ? "done" : "plan";
+      LS.set(kp + "status", s);
+      renderSt();
+    };
+  };
+  renderSt();
+  makeEditable($('[data-f="t"]', card), kp + "t", {});
+  makeEditable($('[data-f="d"]', card), kp + "d", { multiline: true });
+  $("#timeline").appendChild(card);
 });
 
-// reviews
-REVIEWS.forEach((r) => {
-  const cls = r.status === "done" ? "done" : r.status === "wip" ? "wip" : "";
-  const tag =
-    r.status === "done"
-      ? '<span class="tag done">Completed</span>'
-      : r.status === "wip"
-        ? '<span class="tag wip">In Progress</span>'
-        : '<span class="tag">Upcoming</span>';
-  const node = el("div", "rev " + cls);
-  node.innerHTML = `<div class="rev-head"><h3>${r.n}</h3>${tag}<span class="rev-date">${r.date}</span></div>
-    <div class="rev-body"><div class="inner">
-      <div class="blk"><span class="k">Objectives</span><p>${r.obj}</p></div>
-      <div class="blk"><span class="k">Work Completed</span><ul>${r.work.map((w) => `<li>${w}</li>`).join("")}</ul></div>
-      <div class="blk"><span class="k">New Additions</span><p>${r.add}</p></div>
-      <div class="blk"><span class="k">Technical Challenge</span><p>${r.chal}</p></div>
-      <div class="blk"><span class="k">Solution Implemented</span><p>${r.sol}</p></div>
-      <div class="blk"><span class="k">Faculty Suggestions</span><p>${r.fac}</p></div>
-      <div class="blk"><span class="k">Changes After Review</span><p>${r.chg}</p></div>
-      <div class="blk"><span class="k">Next Steps</span><p>${r.next}</p></div>
-    </div></div>`;
+// reviews — editable status + fields, saved on this device
+REVIEWS.forEach((r, i) => {
+  const kp = "arss-rev-" + i + "-";
+  const getf = (f, d) => {
+    const v = LS.get(kp + f);
+    return v != null && v !== "" ? v : d;
+  };
+  let status = LS.get(kp + "status") || r.status;
+  const clsOf = (s) => "rev " + (s === "done" ? "done" : s === "wip" ? "wip" : "");
+  const blks = [
+    ["Objectives", "obj", r.obj],
+    ["Work Completed", "work", r.work.join("\n")],
+    ["New Additions", "add", r.add],
+    ["Technical Challenge", "chal", r.chal],
+    ["Solution Implemented", "sol", r.sol],
+    ["Faculty Suggestions", "fac", r.fac],
+    ["Changes After Review", "chg", r.chg],
+    ["Next Steps", "next", r.next],
+  ];
+  const node = el("div", clsOf(status));
+  node.innerHTML =
+    `<div class="rev-head">
+      <h3 class="rev-name">${getf("n", r.n)}</h3>
+      <select class="statsel" aria-label="Review status">
+        <option value="up">Upcoming</option>
+        <option value="wip">In Progress</option>
+        <option value="done">Completed</option>
+      </select>
+      <span class="rev-date">${getf("date", r.date)}</span>
+    </div>
+    <div class="rev-body"><div class="inner">` +
+    blks
+      .map(
+        ([label, f, d]) =>
+          `<div class="blk"><span class="k">${label}</span><p data-f="${f}"${f === "work" ? ' style="white-space:pre-line"' : ""}>${getf(f, d)}</p></div>`,
+      )
+      .join("") +
+    `</div><p class="editable-note">${IC.edit} Set the status dropdown and click any field to edit · saved on this device.</p></div>`;
   const head = $(".rev-head", node),
-    body = $(".rev-body", node);
-  head.onclick = () => {
+    body = $(".rev-body", node),
+    sel = $(".statsel", node);
+  sel.value = status;
+  sel.onclick = (e) => e.stopPropagation();
+  sel.onchange = () => {
+    status = sel.value;
+    node.className = clsOf(status);
+    LS.set(kp + "status", status);
+  };
+  head.onclick = (e) => {
+    if (e.target.closest(".statsel") || e.target.isContentEditable) return;
     body.style.maxHeight = body.style.maxHeight
       ? ""
       : body.scrollHeight + 40 + "px";
   };
+  const reflow = () => {
+    if (body.style.maxHeight) body.style.maxHeight = body.scrollHeight + 40 + "px";
+  };
+  makeEditable($(".rev-name", node), kp + "n", {});
+  makeEditable($(".rev-date", node), kp + "date", {});
+  node
+    .querySelectorAll(".blk [data-f]")
+    .forEach((p) =>
+      makeEditable(p, kp + p.dataset.f, { multiline: true, onSave: reflow }),
+    );
   $("#reviewList").appendChild(node);
 });
 
-// work progress
-WORK.forEach(([t, p]) => {
+// work progress — editable % per workstream, saved on this device
+WORK.forEach(([t, p], i) => {
+  const kp = "arss-work-" + i;
+  const saved = LS.get(kp);
+  const pct = saved != null && saved !== "" ? Math.max(0, Math.min(100, parseInt(saved, 10) || 0)) : p;
   const c = el(
     "div",
     "prog",
-    `<div class="t"><span>${t}</span><b>${p}%</b></div><div class="bar"><i data-p="${p}"></i></div>`,
+    `<div class="t"><span>${t}</span><b><span class="pctval" title="Click to edit %">${pct}</span>%</b></div><div class="bar"><i data-p="${pct}"></i></div>`,
   );
+  const bar = $(".bar i", c);
+  bar.style.width = pct + "%";
+  makeEditable($(".pctval", c), kp, {
+    number: true,
+    max: 100,
+    onSave: (v) => {
+      bar.dataset.p = v;
+      bar.style.width = v + "%";
+    },
+  });
   $("#workGrid").appendChild(c);
 });
 
@@ -409,32 +467,74 @@ DOCS.forEach((d, i) => {
   $("#docGrid").appendChild(row);
 });
 
-/* ---- wire uploads: images (team/mentor/gallery) + PDFs (docs) ---- */
+/* ---- wire uploads: images (team/mentor/gallery/component) + PDFs (docs) ---- */
+function wireOneSlot(slot) {
+  if (slot.dataset.wired) return; // avoid double-binding on re-wire
+  slot.dataset.wired = "1";
+  const key = "arss-img-" + slot.dataset.key,
+    img = slot.querySelector(".ps-img");
+  const saved = LS.get(key);
+  if (saved) {
+    img.src = saved;
+    slot.classList.add("has");
+  }
+  const up = () =>
+    pickFile("image/*", (f) =>
+      downscaleImage(f, 760, (url) => {
+        img.src = url;
+        slot.classList.add("has");
+        if (!LS.set(key, url))
+          alert("This image is too large to save on this device.");
+      }),
+    );
+  const btn = slot.querySelector(".ps-up");
+  if (btn)
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      up();
+    };
+  slot.addEventListener("click", up);
+}
 function wireImageSlots() {
-  document.querySelectorAll(".pslot").forEach((slot) => {
-    const key = "arss-img-" + slot.dataset.key,
-      img = slot.querySelector(".ps-img");
-    const saved = LS.get(key);
-    if (saved) {
-      img.src = saved;
-      slot.classList.add("has");
+  document.querySelectorAll(".pslot").forEach(wireOneSlot);
+}
+
+/* ---- inline editable text, persisted per key on this device ---- */
+function makeEditable(elm, key, opts) {
+  opts = opts || {};
+  const saved = LS.get(key);
+  if (saved != null && saved !== "") elm.textContent = saved;
+  elm.contentEditable = "true";
+  elm.spellcheck = false;
+  elm.setAttribute("role", "textbox");
+  elm.classList.add("editable");
+  if (!elm.title) elm.title = "Click to edit";
+  elm.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !opts.multiline) {
+      e.preventDefault();
+      elm.blur();
     }
-    const up = () =>
-      pickFile("image/*", (f) =>
-        downscaleImage(f, 760, (url) => {
-          img.src = url;
-          slot.classList.add("has");
-          LS.set(key, url);
-        }),
-      );
-    const btn = slot.querySelector(".ps-up");
-    if (btn)
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        up();
-      };
-    slot.addEventListener("click", up);
   });
+  elm.addEventListener("blur", () => {
+    let v = elm.textContent.replace(/ /g, " ").trim();
+    if (opts.number) {
+      const max = opts.max == null ? 100 : opts.max;
+      v = String(Math.max(0, Math.min(max, Math.round(parseFloat(v) || 0))));
+      elm.textContent = v;
+    }
+    LS.set(key, v);
+    if (opts.onSave) opts.onSave(v);
+  });
+  return elm;
+}
+
+/* ---- component field with per-device override ---- */
+function compField(c, f) {
+  const v = LS.get("arss-comp-" + c.id + "-" + f);
+  return v != null && v !== "" ? v : c[f];
+}
+function renderCompCard(card, c) {
+  card.innerHTML = `<div class="ic"><svg viewBox="0 0 24 24"><path d="${c.icon}"/></svg></div><h3>${compField(c, "name")}</h3><p>${compField(c, "fn")}</p><div class="chips"><span class="chip2">IN: ${compField(c, "in")}</span><span class="chip2">OUT: ${compField(c, "out")}</span></div>`;
 }
 function openPdf(src, name) {
   $("#pdfTitle").textContent = name || "Document";
@@ -508,9 +608,9 @@ wireDocs();
     reg: ["Regulator", 612, 16, "reg"],
     valve: ["O₂ Valve", 760, 16, "valve"],
     exhale: ["Exhaled Gas", 612, 168, "oneway"],
-    moist: ["Moisture Sep.", 470, 168, "moist"],
-    scrub: ["CO₂ Scrubber", 330, 168, "scrub"],
-    cond: ["Conditioned Gas", 150, 168, "mixing"],
+    scrub: ["CO₂ Scrubber", 470, 168, "scrub"],
+    moist: ["Moisture Sep.", 330, 168, "moist"],
+    recirc: ["Recirc Blower", 150, 168, "recirc"],
     esp: ["ESP32", 760, 260, "esp"],
     act: ["Actuators", 470, 260, "blower"],
   };
@@ -532,19 +632,18 @@ wireDocs();
     path("M596,37 H612", "var(--violet)") +
     path("M738,37 H760", "var(--violet)") +
     path("M533,37 V58", "var(--violet)");
-  // recycle (green)
+  // recycle (green): mask → exhaled → CO₂ scrubber → moisture sep → recirc blower → back into mixing
   svg +=
-    path("M676,110 V189 H676", "var(--green)") +
+    path("M675,106 V168", "var(--green)") +
     path("M612,189 H596", "var(--green)") +
-    path("M456,189 H420", "var(--green)") +
-    path("M276,189 H276", "var(--green)") +
-    path("M150,189 H92 V85 H150", "var(--green)") +
-    path("M213,189 V110", "var(--green)", "3 6");
-  // control (red/amber)
+    path("M470,189 H456", "var(--green)") +
+    path("M330,189 H276", "var(--green)") +
+    path("M213,168 V132 H533 V100", "var(--green)");
+  // control (red = sensing/decision signal, amber = actuator drive)
   svg +=
-    path("M823,85 V260 H823", "var(--red)", "3 5") +
-    path("M760,281 H533 V281", "var(--red)", "3 5") +
-    path("M470,271 V110", "var(--orange)", "3 5");
+    path("M823,106 V260", "var(--red)", "3 5") +
+    path("M760,281 H533", "var(--red)", "3 5") +
+    path("M533,281 H303 V106 H330", "var(--orange)", "3 5");
   for (const k in N) {
     const [label, x, y, cid] = N[k];
     svg += `<g class="node" data-c="${cid}"><rect x="${x}" y="${y}" width="${W}" height="${H}" rx="9"/><text x="${x + W / 2}" y="${y + H / 2 + 4}" text-anchor="middle">${label}</text></g>`;
@@ -562,19 +661,51 @@ wireDocs();
   });
 })();
 
-/* side panel */
+/* side panel — real image upload + editable name & fields */
 function openPanel(c) {
+  const rows = [
+    ["Function", "fn"],
+    ["Working principle", "prin"],
+    ["Input", "in"],
+    ["Output", "out"],
+    ["Sensor interaction", "sensor"],
+    ["Control interaction", "ctrl"],
+    ["Specifications", "specs"],
+    ["Material", "mat"],
+  ];
   $("#spBody").innerHTML =
-    `<span class="eyebrow">Component</span><h3 style="margin-top:.6rem">${c.name}</h3>
-    <div class="sp-media">3D / IMAGE PLACEHOLDER</div>
-    <div class="sp-row"><span class="k">Function</span><span class="v">${c.fn}</span></div>
-    <div class="sp-row"><span class="k">Working principle</span><span class="v">${c.prin}</span></div>
-    <div class="sp-row"><span class="k">Input</span><span class="v">${c.in}</span></div>
-    <div class="sp-row"><span class="k">Output</span><span class="v">${c.out}</span></div>
-    <div class="sp-row"><span class="k">Sensor interaction</span><span class="v">${c.sensor}</span></div>
-    <div class="sp-row"><span class="k">Control interaction</span><span class="v">${c.ctrl}</span></div>
-    <div class="sp-row"><span class="k">Specifications</span><span class="v">${c.specs}</span></div>
-    <div class="sp-row"><span class="k">Material</span><span class="v">${c.mat}</span></div>`;
+    `<span class="eyebrow">Component</span>
+    <h3 id="sp-name" style="margin-top:.6rem">${compField(c, "name")}</h3>
+    <div class="sp-media">${slotHTML("comp-" + c.id, "＋", "ADD REAL IMAGE")}</div>` +
+    rows
+      .map(
+        ([label, f]) =>
+          `<div class="sp-row"><span class="k">${label}</span><span class="v" data-f="${f}">${compField(c, f)}</span></div>`,
+      )
+      .join("") +
+    `<p class="editable-note">${IC.edit} Click the name or any value to edit · add a real image above · changes are saved on this device.</p>`;
+  // real image slot
+  const slot = $(".pslot", $("#spBody"));
+  if (slot) wireOneSlot(slot);
+  // editable name → also updates the component card in the grid
+  makeEditable($("#sp-name"), "arss-comp-" + c.id + "-name", {
+    onSave: () => {
+      const card = document.getElementById("comp-card-" + c.id);
+      if (card) renderCompCard(card, c);
+    },
+  });
+  // editable spec fields → keep grid card (fn/in/out) in sync
+  $("#spBody")
+    .querySelectorAll(".sp-row .v")
+    .forEach((span) =>
+      makeEditable(span, "arss-comp-" + c.id + "-" + span.dataset.f, {
+        multiline: true,
+        onSave: () => {
+          const card = document.getElementById("comp-card-" + c.id);
+          if (card) renderCompCard(card, c);
+        },
+      }),
+    );
   $("#sidepanel").classList.add("open");
 }
 $("#spClose").onclick = () => $("#sidepanel").classList.remove("open");

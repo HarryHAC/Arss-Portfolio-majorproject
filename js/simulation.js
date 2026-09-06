@@ -297,7 +297,21 @@ function drawWave(id, buf, color, scaleMax) {
 }
 
 /* decision engine */
+// Evaluated top-to-bottom; the first matching rule is the active decision.
+// Safety-critical rules are checked first so they are never masked by a parameter rule.
 const DEC_RULES = [
+  {
+    cond: (r) => r.faults.some((f) => f.t === "SENSOR FAILURE"),
+    k: "SENSOR FAULT",
+    t: "Activate fail-safe · safe defaults",
+    crit: true,
+  },
+  {
+    cond: (r) => r.faults.some((f) => f.crit),
+    k: "UNSAFE CONDITION",
+    t: "Alarm ON · ensure user safety",
+    crit: true,
+  },
   {
     cond: (r) => r.co2 > 3000,
     k: "CO₂ HIGH",
@@ -321,18 +335,6 @@ const DEC_RULES = [
     k: "PRESSURE LOW",
     t: "Increase blower speed",
     crit: false,
-  },
-  {
-    cond: (r) => r.faults.some((f) => f.t === "SENSOR FAILURE"),
-    k: "SENSOR FAULT",
-    t: "Activate fail-safe · safe defaults",
-    crit: true,
-  },
-  {
-    cond: (r) => r.faults.some((f) => f.crit),
-    k: "UNSAFE CONDITION",
-    t: "Alarm ON · ensure user safety",
-    crit: true,
   },
   {
     cond: (r) => true,
@@ -393,7 +395,7 @@ const DEC_RULES = [
           b = nodes[j];
         const d = Math.hypot(a.x - b.x, a.y - b.y);
         if (d < 90) {
-          x.strokeStyle = "rgba(200,135,58," + (1 - d / 90) * 0.22 + ")";
+          x.strokeStyle = "rgba(53,185,214," + (1 - d / 90) * 0.22 + ")";
           x.lineWidth = 1;
           x.beginPath();
           x.moveTo(a.x, a.y);
@@ -402,13 +404,13 @@ const DEC_RULES = [
         }
       }
     nodes.forEach((n) => {
-      x.fillStyle = "rgba(200,135,58,.7)";
+      x.fillStyle = "rgba(53,185,214,.7)";
       x.beginPath();
       x.arc(n.x, n.y, 2, 0, Math.PI * 2);
       x.fill();
     });
     // core
-    x.fillStyle = "rgba(158,143,207,.85)";
+    x.fillStyle = "rgba(47,175,162,.9)";
     x.beginPath();
     x.arc(w / 2, h / 2, 7 + Math.sin(Date.now() / 400) * 2, 0, Math.PI * 2);
     x.fill();
@@ -425,7 +427,7 @@ function loop() {
   if (tick % 3 === 0) {
     // gauges
     setTxt("v-o2", Math.round(r.o2));
-    drawRing("o2", r.o2, 60, r.o2 < 18 ? "#FF3B30" : "#00E5FF");
+    drawRing("o2", r.o2, 60, r.o2 < 18 ? "#D9534F" : "#35B9D6");
     setTxt("v-co2", Math.round(r.co2));
     setTxt("v-press", fmt(r.press));
     setTxt("v-flow", fmt(r.flow));
@@ -447,9 +449,9 @@ function loop() {
       r.press + Math.sin(tick / 6) * 0.4 * (state.running ? 1 : 0),
     );
     push(wave.flow, r.flow + Math.sin(tick / 4) * 2 * (state.running ? 1 : 0));
-    drawWave("co2", wave.co2, "#FF9D00", 6000);
-    drawWave("press", wave.press, "#00E5FF", 6.5);
-    drawWave("flow", wave.flow, "#1E90FF", 50);
+    drawWave("co2", wave.co2, "#E6A23C", 6000);
+    drawWave("press", wave.press, "#35B9D6", 6.5);
+    drawWave("flow", wave.flow, "#3D7FEA", 50);
     // status bar
     const sb = $("#statusBar");
     const crit = r.faults.some((f) => f.crit);
