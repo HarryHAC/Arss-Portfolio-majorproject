@@ -283,137 +283,137 @@ function buildScene(canvas, opts) {
   // =====================================================================
   const chest = new THREE.Group();
   sys.add(chest);
-  const CY = 0.25; // chest centre height
-  const plate = new THREE.Mesh(new THREE.BoxGeometry(3.3, 2.7, 0.36), matBody);
-  plate.position.set(0, CY, -0.05);
+  const CY = 0.7; // chest-pack centre height (raised onto the chest, sized to the torso)
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(2.12, 1.5, 0.22), matBody);
+  plate.position.set(0, CY + 0.05, 0.0);
   chest.add(plate);
-  const frameRim = new THREE.Mesh(new THREE.BoxGeometry(3.44, 2.84, 0.16), matSkirt);
-  frameRim.position.set(0, CY, 0.02);
+  const frameRim = new THREE.Mesh(new THREE.BoxGeometry(2.26, 1.64, 0.12), matSkirt);
+  frameRim.position.set(0, CY + 0.05, 0.06);
   chest.add(frameRim);
-  const inset = new THREE.Mesh(new THREE.BoxGeometry(3.16, 2.56, 0.2), matDark);
-  inset.position.set(0, CY, 0.12);
+  const inset = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.4, 0.14), matDark);
+  inset.position.set(0, CY + 0.05, 0.13);
   chest.add(inset);
-  [-0.62, 0.62].forEach((yy) => bx(chest, 0, CY + yy, 0.22, 3.0, 0.05, 0.05, matSteel));
+  [-0.42, 0.42].forEach((yy) => bx(chest, 0, CY + 0.05 + yy, 0.2, 1.94, 0.03, 0.04, matSteel));
   // shoulder straps sweeping up toward the mask harness
-  [-1.2, 1.2].forEach((xx) => {
+  [-0.82, 0.82].forEach((xx) => {
     const c = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(xx, CY + 1.35, 0.1),
-      new THREE.Vector3(xx * 1.02, CY + 2.1, -0.15),
-      new THREE.Vector3(xx * 0.5, CY + 2.7, -0.5),
+      new THREE.Vector3(xx, CY + 0.78, 0.06),
+      new THREE.Vector3(xx * 1.1, CY + 1.6, -0.2),
+      new THREE.Vector3(xx * 0.6, MASK_Y - 0.55, -0.55),
     ]);
-    chest.add(new THREE.Mesh(new THREE.TubeGeometry(c, 20, 0.07, 8, false), matSkirt));
+    chest.add(new THREE.Mesh(new THREE.TubeGeometry(c, 20, 0.05, 8, false), matSkirt));
   });
   // chassis status strip
   for (let i = 0; i < 5; i++)
-    sph(chest, -0.4 + i * 0.2, CY - 1.15, 0.24, 0.03, matAccent(i % 2 ? 0x4caf82 : 0x35b9d6));
+    sph(chest, -0.24 + i * 0.12, CY - 0.66, 0.16, 0.02, matAccent(i % 2 ? 0x4caf82 : 0x35b9d6));
 
   // ---------- MIXING CHAMBER (centre) ----------
-  const gMix = comp("mixing", [0, CY + 0.65, 0.75], [0, 0.15, 0.95]);
-  const mix = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.0, 28), matGlass);
-  mix.position.set(0, CY + 0.5, 0.55);
+  const gMix = comp("mixing", [0, CY + 0.5, 0.46], [0, 0.15, 0.9]);
+  const mix = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.6, 26), matGlass);
+  mix.position.set(0, CY + 0.05, 0.32);
   gMix.add(mix);
-  cyl2(gMix, 0, CY + 1.02, 0.55, 0.44, 0.44, 0.1, matSteel);
-  cyl2(gMix, 0, CY - 0.02, 0.55, 0.44, 0.44, 0.1, matSteel);
-  tor(gMix, 0, CY + 0.5, 0.55, 0.24, 0.03, matAccent(0x7a9fc2), Math.PI / 2, 0);
-  cyl2(gMix, -0.36, CY + 0.5, 0.55, 0.08, 0.08, 0.3, matSteel, "x");
-  cyl2(gMix, 0.36, CY + 0.5, 0.55, 0.08, 0.08, 0.3, matSteel, "x");
-  cyl2(gMix, 0, CY + 1.12, 0.55, 0.07, 0.07, 0.24, matSteel);
+  cyl2(gMix, 0, CY + 0.35, 0.32, 0.27, 0.27, 0.06, matSteel);
+  cyl2(gMix, 0, CY - 0.25, 0.32, 0.27, 0.27, 0.06, matSteel);
+  tor(gMix, 0, CY + 0.05, 0.32, 0.15, 0.02, matAccent(0x7a9fc2), Math.PI / 2, 0);
+  cyl2(gMix, -0.22, CY + 0.05, 0.32, 0.05, 0.05, 0.16, matSteel, "x");
+  cyl2(gMix, 0.22, CY + 0.05, 0.32, 0.05, 0.05, 0.16, matSteel, "x");
+  cyl2(gMix, 0, CY + 0.42, 0.32, 0.045, 0.045, 0.14, matSteel);
 
   // ---------- O2 CYLINDER (left, vertical) ----------
-  const gCyl = comp("cylinder", [-1.16, CY + 0.55, 0.62], [-1.15, -0.2, 0.35]);
-  cyl2(gCyl, -1.16, CY + 0.35, 0.5, 0.26, 0.26, 1.1, matAccent(0x2fafa2));
-  cyl2(gCyl, -1.16, CY + 0.95, 0.5, 0.1, 0.26, 0.22, matAccent(0x2fafa2));
-  cyl2(gCyl, -1.16, CY + 1.1, 0.5, 0.08, 0.08, 0.14, matSteel);
-  cyl2(gCyl, -1.16, CY - 0.22, 0.5, 0.28, 0.28, 0.06, matDark);
+  const gCyl = comp("cylinder", [-0.7, CY + 0.05, 0.42], [-1.1, -0.2, 0.35]);
+  cyl2(gCyl, -0.7, CY - 0.05, 0.34, 0.16, 0.16, 0.66, matAccent(0x2fafa2));
+  cyl2(gCyl, -0.7, CY + 0.3, 0.34, 0.06, 0.16, 0.14, matAccent(0x2fafa2));
+  cyl2(gCyl, -0.7, CY + 0.4, 0.34, 0.05, 0.05, 0.09, matSteel);
+  cyl2(gCyl, -0.7, CY - 0.4, 0.34, 0.17, 0.17, 0.04, matDark);
 
   // ---------- REGULATOR (left, above cylinder) ----------
-  const gReg = comp("reg", [-1.16, CY + 1.3, 0.62], [-1.25, 0.4, 0.4]);
-  bx(gReg, -1.16, CY + 1.24, 0.52, 0.26, 0.24, 0.24, matSteel);
-  cyl2(gReg, -0.98, CY + 1.28, 0.62, 0.1, 0.1, 0.05, matAccent(0xf5f9ff), "z");
-  sph(gReg, -1.34, CY + 1.24, 0.52, 0.06, matAccent(0x35b9d6));
+  const gReg = comp("reg", [-0.7, CY + 0.62, 0.44], [-1.25, 0.4, 0.4]);
+  bx(gReg, -0.7, CY + 0.46, 0.34, 0.16, 0.15, 0.15, matSteel);
+  cyl2(gReg, -0.58, CY + 0.48, 0.42, 0.06, 0.06, 0.03, matAccent(0xf5f9ff), "z");
+  sph(gReg, -0.82, CY + 0.46, 0.34, 0.04, matAccent(0x35b9d6));
 
   // ---------- O2 CONTROL VALVE (left-centre) ----------
-  const gValve = comp("valve", [-0.56, CY + 1.2, 0.64], [-0.6, 0.55, 0.5]);
-  cyl2(gValve, -0.56, CY + 1.1, 0.55, 0.12, 0.12, 0.2, matDark);
-  tor(gValve, -0.56, CY + 1.1, 0.55, 0.13, 0.03, matAccent(0x2fafa2), Math.PI / 2, 0);
-  bx(gValve, -0.56, CY + 0.92, 0.55, 0.16, 0.14, 0.16, matSteel);
+  const gValve = comp("valve", [-0.34, CY + 0.56, 0.44], [-0.6, 0.55, 0.5]);
+  cyl2(gValve, -0.34, CY + 0.4, 0.34, 0.07, 0.07, 0.12, matDark);
+  tor(gValve, -0.34, CY + 0.4, 0.34, 0.08, 0.02, matAccent(0x2fafa2), Math.PI / 2, 0);
+  bx(gValve, -0.34, CY + 0.28, 0.34, 0.1, 0.09, 0.1, matSteel);
 
   // ---------- ONE-WAY VALVE (top-right; receives exhaled gas) ----------
-  const gOne = comp("oneway", [0.98, CY + 1.05, 0.66], [0.9, 0.85, 0.4]);
-  cyl2(gOne, 0.98, CY + 1.28, 0.55, 0.14, 0.14, 0.36, matVisor, "x");
-  cyl2(gOne, 1.16, CY + 1.28, 0.55, 0.17, 0.17, 0.05, matSteel, "x");
-  cyl2(gOne, 0.8, CY + 1.28, 0.55, 0.17, 0.17, 0.05, matSteel, "x");
-  cyl2(gOne, 0.98, CY + 1.28, 0.55, 0.11, 0.03, 0.09, matAccent(0xe6a23c), "x");
+  const gOne = comp("oneway", [0.64, CY + 0.5, 0.46], [0.9, 0.85, 0.4]);
+  cyl2(gOne, 0.64, CY + 0.44, 0.34, 0.09, 0.09, 0.24, matVisor, "x");
+  cyl2(gOne, 0.76, CY + 0.44, 0.34, 0.11, 0.11, 0.04, matSteel, "x");
+  cyl2(gOne, 0.52, CY + 0.44, 0.34, 0.11, 0.11, 0.04, matSteel, "x");
+  cyl2(gOne, 0.64, CY + 0.44, 0.34, 0.07, 0.02, 0.06, matAccent(0xe6a23c), "x");
 
   // ---------- CO2 SCRUBBER (right; recycle step 1 - removes CO2) ----------
-  const gScrub = comp("scrub", [1.05, CY + 0.62, 0.66], [1.3, 0.35, 0.4]);
-  cyl2(gScrub, 1.05, CY + 0.52, 0.55, 0.28, 0.28, 0.8, matVisor, "x");
-  for (let i = 0; i < 12; i++)
+  const gScrub = comp("scrub", [0.68, CY + 0.05, 0.46], [1.3, 0.35, 0.4]);
+  cyl2(gScrub, 0.68, CY + 0.02, 0.34, 0.17, 0.17, 0.5, matVisor, "x");
+  for (let i = 0; i < 10; i++)
     sph(
       gScrub,
-      0.72 + Math.random() * 0.66,
-      CY + 0.52 + (Math.random() - 0.5) * 0.3,
-      0.55 + (Math.random() - 0.5) * 0.3,
-      0.055,
+      0.46 + Math.random() * 0.44,
+      CY + 0.02 + (Math.random() - 0.5) * 0.18,
+      0.34 + (Math.random() - 0.5) * 0.18,
+      0.035,
       matAccent(0x4caf82),
     );
-  cyl2(gScrub, 0.63, CY + 0.52, 0.55, 0.31, 0.31, 0.07, matSteel, "x");
-  cyl2(gScrub, 1.47, CY + 0.52, 0.55, 0.31, 0.31, 0.07, matSteel, "x");
-  for (let i = 1; i < 4; i++)
-    tor(gScrub, 0.72 + i * 0.2, CY + 0.52, 0.55, 0.29, 0.022, matSteel, 0, Math.PI / 2);
+  cyl2(gScrub, 0.42, CY + 0.02, 0.34, 0.19, 0.19, 0.05, matSteel, "x");
+  cyl2(gScrub, 0.94, CY + 0.02, 0.34, 0.19, 0.19, 0.05, matSteel, "x");
+  for (let i = 1; i < 3; i++)
+    tor(gScrub, 0.5 + i * 0.16, CY + 0.02, 0.34, 0.18, 0.014, matSteel, 0, Math.PI / 2);
 
   // ---------- MOISTURE SEPARATOR (right; recycle step 2 - removes water) ----------
-  const gMoist = comp("moist", [1.05, CY - 0.42, 0.66], [1.3, -0.4, 0.4]);
-  cyl2(gMoist, 1.05, CY - 0.05, 0.55, 0.24, 0.24, 0.18, matSteel);
-  const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.18, 0.42, 22), matVisor);
-  bowl.position.set(1.05, CY - 0.33, 0.55);
+  const gMoist = comp("moist", [0.68, CY - 0.42, 0.46], [1.3, -0.4, 0.4]);
+  cyl2(gMoist, 0.68, CY - 0.3, 0.34, 0.15, 0.15, 0.12, matSteel);
+  const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.11, 0.26, 20), matVisor);
+  bowl.position.set(0.68, CY - 0.5, 0.34);
   gMoist.add(bowl);
-  for (let i = 0; i < 5; i++)
+  for (let i = 0; i < 4; i++)
     sph(
       gMoist,
-      0.98 + Math.random() * 0.14,
-      CY - 0.42 + Math.random() * 0.14,
-      0.55 + (Math.random() - 0.5) * 0.2,
-      0.03,
+      0.62 + Math.random() * 0.1,
+      CY - 0.56 + Math.random() * 0.1,
+      0.34 + (Math.random() - 0.5) * 0.14,
+      0.02,
       matAccent(0x7a9fc2),
     );
 
   // ---------- RECIRCULATION BLOWER (recycle step 3 - re-pressurises recycled gas) ----------
-  const gRecirc = comp("recirc", [0.5, CY - 0.3, 0.68], [0.5, -0.95, 0.5]);
-  cyl2(gRecirc, 0.5, CY - 0.6, 0.55, 0.24, 0.24, 0.2, matDark, "z");
-  cyl2(gRecirc, 0.5, CY - 0.6, 0.66, 0.14, 0.14, 0.06, matSteel, "z");
-  cyl2(gRecirc, 0.5, CY - 0.6, 0.71, 0.09, 0.04, 0.07, matAccent(0x35b9d6), "z");
+  const gRecirc = comp("recirc", [0.28, CY - 0.4, 0.48], [0.4, -0.95, 0.5]);
+  cyl2(gRecirc, 0.28, CY - 0.52, 0.34, 0.15, 0.15, 0.13, matDark, "z");
+  cyl2(gRecirc, 0.28, CY - 0.52, 0.42, 0.09, 0.09, 0.04, matSteel, "z");
+  cyl2(gRecirc, 0.28, CY - 0.52, 0.46, 0.055, 0.025, 0.05, matAccent(0x35b9d6), "z");
   for (let k = 0; k < 8; k++) {
     const a = (k / 8) * Math.PI * 2;
     const b = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 0.02, 0.035),
+      new THREE.BoxGeometry(0.1, 0.013, 0.022),
       matAccent(0x35b9d6),
     );
-    b.position.set(0.5 + Math.cos(a) * 0.09, CY - 0.6 + Math.sin(a) * 0.09, 0.63);
+    b.position.set(0.28 + Math.cos(a) * 0.055, CY - 0.52 + Math.sin(a) * 0.055, 0.4);
     b.rotation.z = a;
     gRecirc.add(b);
   }
-  bx(gRecirc, 0.5, CY - 0.6, 0.42, 0.26, 0.26, 0.14, matDark);
-  cyl2(gRecirc, 0.72, CY - 0.6, 0.55, 0.06, 0.06, 0.22, matSteel, "x");
+  bx(gRecirc, 0.28, CY - 0.52, 0.28, 0.16, 0.16, 0.09, matDark);
+  cyl2(gRecirc, 0.42, CY - 0.52, 0.34, 0.04, 0.04, 0.14, matSteel, "x");
 
   // ---------- ESP32 CONTROLLER (bottom-left, exposed PCB) ----------
-  const gEsp = comp("esp", [-0.72, CY - 0.28, 0.7], [-0.8, -0.9, 0.5]);
-  bx(gEsp, -0.72, CY - 0.55, 0.6, 0.78, 0.46, 0.06, matPCB);
-  bx(gEsp, -0.72, CY - 0.51, 0.66, 0.32, 0.2, 0.06, matDark);
-  bx(gEsp, -0.56, CY - 0.55, 0.66, 0.11, 0.11, 0.05, matDark);
+  const gEsp = comp("esp", [-0.5, CY - 0.36, 0.48], [-0.8, -0.9, 0.5]);
+  bx(gEsp, -0.5, CY - 0.52, 0.36, 0.48, 0.3, 0.04, matPCB);
+  bx(gEsp, -0.5, CY - 0.49, 0.4, 0.2, 0.13, 0.04, matDark);
+  bx(gEsp, -0.4, CY - 0.52, 0.4, 0.07, 0.07, 0.03, matDark);
   for (let i = 0; i < 8; i++)
-    bx(gEsp, -0.97 + i * 0.07, CY - 0.75, 0.62, 0.014, 0.045, 0.014, matSteel);
-  sph(gEsp, -0.92, CY - 0.4, 0.64, 0.03, matAccent(0x35b9d6));
+    bx(gEsp, -0.66 + i * 0.044, CY - 0.66, 0.37, 0.009, 0.028, 0.009, matSteel);
+  sph(gEsp, -0.64, CY - 0.42, 0.38, 0.02, matAccent(0x35b9d6));
 
   // ---------- SENSOR SUITE (top-centre; samples the delivered gas) ----------
-  const gSens = comp("sensors", [0.26, CY + 1.34, 0.66], [0.1, 0.95, 0.4]);
+  const gSens = comp("sensors", [0.16, CY + 0.58, 0.46], [0.1, 0.95, 0.4]);
   [
-    [0.14, CY + 1.16, 0],
-    [0.36, CY + 1.14, 0.06],
-    [0.26, CY + 1.32, -0.02],
+    [0.06, CY + 0.42, 0],
+    [0.28, CY + 0.4, 0.05],
+    [0.16, CY + 0.54, -0.02],
   ].forEach((p) => {
-    bx(gSens, p[0], p[1], 0.56 + p[2], 0.18, 0.12, 0.05, matPCB);
-    sph(gSens, p[0], p[1] + 0.05, 0.6 + p[2], 0.055, matAccent(0x35b9d6));
+    bx(gSens, p[0], p[1], 0.34 + p[2], 0.12, 0.08, 0.03, matPCB);
+    sph(gSens, p[0], p[1] + 0.04, 0.37 + p[2], 0.035, matAccent(0x35b9d6));
   });
 
   // =====================================================================
@@ -514,7 +514,7 @@ function buildScene(canvas, opts) {
     const mat = new THREE.PointsMaterial({
       color,
       map: dotTex,
-      size: opts.light ? 0.26 : 0.3,
+      size: opts.light ? 0.2 : 0.24,
       transparent: true,
       opacity: 0.95,
       blending: THREE.AdditiveBlending,
@@ -553,24 +553,24 @@ function buildScene(canvas, opts) {
   }
   const HSUP = [
     [-0.95, MASK_Y - 0.85, 0.3],
-    [-0.72, 2.1, 0.5],
-    [-0.5, CY + 1.1, 0.55],
-    [-0.32, CY + 0.55, 0.55],
+    [-0.6, 2.0, 0.45],
+    [-0.35, CY + 0.6, 0.4],
+    [-0.22, CY + 0.1, 0.35],
   ];
   const HDEL = [
-    [0, CY + 1.2, 0.55],
-    [-0.05, 2.05, 0.5],
+    [0, CY + 0.5, 0.34],
+    [-0.05, 1.9, 0.4],
     [-0.14, MASK_Y - 0.95, 0.2],
   ];
   const HRET = [
     [0.16, MASK_Y - 0.95, 0.2],
-    [0.5, 2.2, 0.45],
-    [0.9, 1.75, 0.55],
-    [0.98, CY + 1.28, 0.55],
+    [0.45, 2.0, 0.4],
+    [0.62, 1.4, 0.4],
+    [0.64, CY + 0.46, 0.36],
   ];
-  buildHose(HSUP, 0.1);
-  buildHose(HDEL, 0.1);
-  buildHose(HRET, 0.1);
+  buildHose(HSUP, 0.08);
+  buildHose(HDEL, 0.08);
+  buildHose(HRET, 0.08);
 
   // ---- animated gas particle flows (follow the real gas path) ----
   addFlow(
@@ -578,7 +578,7 @@ function buildScene(canvas, opts) {
       [-1.4, MASK_Y + 0.2, 0.24],
       [-1.12, MASK_Y - 0.5, 0.42],
       ...HSUP,
-      [-0.05, CY + 0.5, 0.55],
+      [-0.1, CY + 0.05, 0.34],
     ],
     0x35b9d6,
     0,
@@ -587,10 +587,10 @@ function buildScene(canvas, opts) {
   addFlow([...HDEL, [0, MASK_Y - 0.5, 0.3]], 0x9fe0ef, 0, true); // DELIVERY: mixing -> mask
   addFlow(
     [
-      [-1.16, CY + 0.6, 0.5],
-      [-1.16, CY + 1.24, 0.52],
-      [-0.56, CY + 1.1, 0.55],
-      [-0.18, CY + 0.5, 0.55],
+      [-0.7, CY + 0.05, 0.34],
+      [-0.7, CY + 0.46, 0.34],
+      [-0.34, CY + 0.4, 0.34],
+      [-0.12, CY + 0.05, 0.34],
     ],
     0x2fafa2,
   ); // O2 MAKEUP: cylinder -> regulator -> valve -> mixing
@@ -598,7 +598,7 @@ function buildScene(canvas, opts) {
     [
       [0.12, MASK_Y - 0.6, 0.32],
       ...HRET,
-      [1.05, CY + 0.52, 0.55],
+      [0.66, CY + 0.02, 0.34],
     ],
     0xe6a23c,
     0,
@@ -606,11 +606,11 @@ function buildScene(canvas, opts) {
   ); // EXHALE: mask -> return hose -> one-way valve -> CO2 scrubber
   addFlow(
     [
-      [1.05, CY + 0.5, 0.55],
-      [1.05, CY - 0.05, 0.55],
-      [1.05, CY - 0.4, 0.55],
-      [0.5, CY - 0.6, 0.55],
-      [0.34, CY + 0.5, 0.55],
+      [0.68, CY + 0.02, 0.34],
+      [0.68, CY - 0.3, 0.34],
+      [0.68, CY - 0.5, 0.34],
+      [0.28, CY - 0.52, 0.34],
+      [0.15, CY + 0.05, 0.34],
     ],
     0x4caf82,
   ); // RECYCLE: scrubber -> moisture -> recirculation blower -> mixing
